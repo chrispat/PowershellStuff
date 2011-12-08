@@ -1,0 +1,128 @@
+#requires -version 2.0
+
+# Wintellect .NET Debugging Code
+# (c) 2009 by John Robbins\Wintellect - Do whatever you want to do with it
+# as long as you give credit. 
+
+<#.SYNOPSIS
+Sets the Visual Studio 2010 Source Server Cache directory. This option is not
+exposed throught the normal Visual Studio settings.
+.DESCRIPTION
+Sets the source server cache directory. It's a very good idea to set the cache
+directory to the same values for Visual Studio and WinDBG. That way you get the 
+benefit if one debugger downloads the source from your version control the other
+does not have to. 
+.PARAMETER Directory
+The directory to use. If the directory does not exist, it will be created.
+#>
+param ( 
+    [Parameter(Mandatory=$true,
+               HelpMessage="Please specify the directory for source extraction")]
+    [string] $Directory
+    ) 
+
+function CreateDirectoryIfNeeded ( [string] $directory )
+{
+	if ( ! ( Test-Path $directory -type "Container" ) )
+	{
+		New-Item -type directory -Path $directory > $null
+	}
+}
+
+$vs2010DebuggerPath = "HKCU:\Software\Microsoft\VisualStudio\10.0\Debugger\"
+$sourceServExtractTo = "SourceServerExtractToDirectory"
+
+$currDir = (Get-ItemProperty $vs2010DebuggerPath).$sourceServExtractTo
+
+Write "The old source cache directory was $currDir"
+
+CreateDirectoryIfNeeded $Directory
+
+Set-ItemProperty -path $vs2010DebuggerPath -name $sourceServExtractTo -value $Directory
+
+Write "The new source cache directory is $Directory"
+
+
+
+
+
+# SIG # Begin signature block
+# MIIOkQYJKoZIhvcNAQcCoIIOgjCCDn4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUCf1M1YmmVmv4fJg85Vy/sg7+
+# vbiggglnMIIEXDCCA0SgAwIBAgIQT2PQMPgVo6WzRGlABj0WiTANBgkqhkiG9w0B
+# AQUFADCBlTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAlVUMRcwFQYDVQQHEw5TYWx0
+# IExha2UgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3b3JrMSEwHwYD
+# VQQLExhodHRwOi8vd3d3LnVzZXJ0cnVzdC5jb20xHTAbBgNVBAMTFFVUTi1VU0VS
+# Rmlyc3QtT2JqZWN0MB4XDTA1MDUxNzAwMDAwMFoXDTEwMDUxNjIzNTk1OVowfjEL
+# MAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
+# BxMHU2FsZm9yZDEaMBgGA1UEChMRQ29tb2RvIENBIExpbWl0ZWQxJDAiBgNVBAMT
+# G0NvbW9kbyBUaW1lIFN0YW1waW5nIFNpZ25lcjCCASIwDQYJKoZIhvcNAQEBBQAD
+# ggEPADCCAQoCggEBALw1oDZwIoERw7KDudMoxjbNJWupe7Ic9ptRnO819O0Ijl44
+# CPh3PApC4PNw3KPXyvVMC8//IpwKfmjWCaIqhHumnbSpwTPi7x8XSMo6zUbmxap3
+# veN3mvpHU0AoWUOT8aSB6u+AtU+nCM66brzKdgyXZFmGJLs9gpCoVbGS06CnBayf
+# UyUIEEeZzZjeaOW0UHijrwHMWUNY5HZufqzH4p4fT7BHLcgMo0kngHWMuwaRZQ+Q
+# m/S60YHIXGrsFOklCb8jFvSVRkBAIbuDlv2GH3rIDRCOovgZB1h/n703AmDypOmd
+# RD8wBeSncJlRmugX8VXKsmGJZUanavJYRn6qoAcCAwEAAaOBvTCBujAfBgNVHSME
+# GDAWgBTa7WR0FJwUPKvdmam9WyhNizzJ2DAdBgNVHQ4EFgQULi2wCkRK04fAAgfO
+# l31QYiD9D4MwDgYDVR0PAQH/BAQDAgbAMAwGA1UdEwEB/wQCMAAwFgYDVR0lAQH/
+# BAwwCgYIKwYBBQUHAwgwQgYDVR0fBDswOTA3oDWgM4YxaHR0cDovL2NybC51c2Vy
+# dHJ1c3QuY29tL1VUTi1VU0VSRmlyc3QtT2JqZWN0LmNybDANBgkqhkiG9w0BAQUF
+# AAOCAQEASo/8HjCoPHXoR+dzrrBperJNvFDWmo+BtmAq9wKlSDoeFccYaxwYpMnf
+# /fHO97gq1m2nzeV9IT0eP3TIorh5liiu4fpzQ/J6voAuZwTaF/qeWpb1nG1+foxs
+# gSdQf2jYifp9BFlnDy105JmH18HhXRFKJvcmEIBnwsP3zzQbxHkhzGA1v6lgd57L
+# vFIyImyt2t9t3fMuNs3Fp1Tg9KTM4/XUYk+ZBgzlb1lvEcfPWCS/ryUdRRF3mWWu
+# MdRdSJ2Mw3JyKZnlCvG5zFo8SNP/QM7NEAM9vzOcCPMQIipHsHcr7ltOZeDTIzwD
+# xM8uRWJpDhvSC/nzIA9TGtB8cfE40DCCBQMwggProAMCAQICEAagBWkwBM7q0PKO
+# CWWI7eQwDQYJKoZIhvcNAQEFBQAwgZUxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJV
+# VDEXMBUGA1UEBxMOU2FsdCBMYWtlIENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJV
+# U1QgTmV0d29yazEhMB8GA1UECxMYaHR0cDovL3d3dy51c2VydHJ1c3QuY29tMR0w
+# GwYDVQQDExRVVE4tVVNFUkZpcnN0LU9iamVjdDAeFw0wNzEyMTgwMDAwMDBaFw0x
+# MDEyMTcyMzU5NTlaMIGqMQswCQYDVQQGEwJVUzEOMAwGA1UEEQwFOTgxMjExCzAJ
+# BgNVBAgMAldBMRAwDgYDVQQHDAdTZWF0dGxlMREwDwYDVQQJDAhVbml0ICNFNDEV
+# MBMGA1UECQwMMjAyMSAxc3QgQXZlMSAwHgYDVQQKDBdKb2huIFJvYmJpbnMvV2lu
+# dGVsbGVjdDEgMB4GA1UEAwwXSm9obiBSb2JiaW5zL1dpbnRlbGxlY3QwggEiMA0G
+# CSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDY0nEbQGJDWzEMPvhBv64poRE67XXK
+# +vWBFGDr8hqeIz+pCinhRhr154HCTIb60tZKcHLhSWmw7l1bpuvYRWkfG8C7EwD2
+# uLqaMrsoSMYOU7yWJSY+GCvKtsEqp5dEMJgdyIiB6RdWgjsy/GxOFpg+3rIzeG42
+# evVtOJVZErlQVuwLb5C+1yiH1zeXxBHRqBUmZfyQ8HZCcpH4+GIu8C2IH9EnMp0y
+# rleHn/3+ktJgFAbvKd5Zvd8y25q00IsEgnDh9lVQW14u9IT/7eMPJFX5jl7+tLRp
+# on0zESO6s/wF1DeRmDMf3YUrH+9MuPem9wWdqA/qydeZW2MILZhZENYBAgMBAAGj
+# ggE2MIIBMjAfBgNVHSMEGDAWgBTa7WR0FJwUPKvdmam9WyhNizzJ2DAdBgNVHQ4E
+# FgQU5WhsWlzWc1O+dlk1OaqKBBn2TzswDgYDVR0PAQH/BAQDAgeAMAwGA1UdEwEB
+# /wQCMAAwEwYDVR0lBAwwCgYIKwYBBQUHAwMwEQYJYIZIAYb4QgEBBAQDAgQQMEYG
+# A1UdIAQ/MD0wOwYMKwYBBAGyMQECAQMCMCswKQYIKwYBBQUHAgEWHWh0dHBzOi8v
+# c2VjdXJlLmNvbW9kby5uZXQvQ1BTMEIGA1UdHwQ7MDkwN6A1oDOGMWh0dHA6Ly9j
+# cmwudXNlcnRydXN0LmNvbS9VVE4tVVNFUkZpcnN0LU9iamVjdC5jcmwwHgYDVR0R
+# BBcwFYETam9obkB3aW50ZWxsZWN0LmNvbTANBgkqhkiG9w0BAQUFAAOCAQEAJsf+
+# TRTjeQNVevP1BCLwAVs9J3+Ti2w1FNoJhTEpW/kfZWy6vPvnZdB1FjE8zWnpYRzu
+# mMT6JFtG13d954iLu21njsDsq4Eemi6TVmCbH1rHWqcViW9B0U4chc6PznFY1G7w
+# rauc6VYqOlmQ23J3etJddzExDQ6axhJ/K4XRBwb1G7JfqtLxk03EljB/MeHBfEbW
+# qUc7sNih9uj6qBehPFFsgX1y/XN0n75Z30LoGAyTWbGjITThpX1eiiYTv2SSI0hY
+# 3uZlCFo9ymPReZBQu/Ywj+T1HWDklnUrAHwjtsMclilpcCnjdvFDua3DFsGy5M6Q
+# w2aGrNS3lwMD2f3n1DGCBJQwggSQAgEBMIGqMIGVMQswCQYDVQQGEwJVUzELMAkG
+# A1UECBMCVVQxFzAVBgNVBAcTDlNhbHQgTGFrZSBDaXR5MR4wHAYDVQQKExVUaGUg
+# VVNFUlRSVVNUIE5ldHdvcmsxITAfBgNVBAsTGGh0dHA6Ly93d3cudXNlcnRydXN0
+# LmNvbTEdMBsGA1UEAxMUVVROLVVTRVJGaXJzdC1PYmplY3QCEAagBWkwBM7q0PKO
+# CWWI7eQwCQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJ
+# KoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQB
+# gjcCARUwIwYJKoZIhvcNAQkEMRYEFMhTn2627CjZXpg9EEapzAsyYyVDMA0GCSqG
+# SIb3DQEBAQUABIIBAAAynPmezZFkU1LqkDqzPyaBN2e/45ZPqwtpz45RSCrFhm54
+# SrRMcdLnNBZZSKx5E7qkqTFydXVLLnquv8E65T/vZsCqobhvx52LihWGpIY+ct/Z
+# aRl97nUJVKEW9ECJfZSQnXuM2ysQcwzGTGPf447IHbzWB68v8ar7gLi6dOpX/Jnh
+# QH9HffxYpqUltbtRWK1Qwndz5atIEU15bNHEHwyv5YdvsfbIeNBNUoWHhjYvIHRU
+# DFjp6qDoZPepohiVzZPPs5zLPvO4muK/O5jDbioVkeSI9psE7A3gSwjAwlNR8d6t
+# 3kh3UsOS89+grmJKdU2qqZjr2I4sNs3LDBIiQqyhggJEMIICQAYJKoZIhvcNAQkG
+# MYICMTCCAi0CAQEwgaowgZUxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJVVDEXMBUG
+# A1UEBxMOU2FsdCBMYWtlIENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0
+# d29yazEhMB8GA1UECxMYaHR0cDovL3d3dy51c2VydHJ1c3QuY29tMR0wGwYDVQQD
+# ExRVVE4tVVNFUkZpcnN0LU9iamVjdAIQT2PQMPgVo6WzRGlABj0WiTAJBgUrDgMC
+# GgUAoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcN
+# MDkxMTI0MDE1OTM3WjAjBgkqhkiG9w0BCQQxFgQUXCBew5XkUDYsCarP7ei3Yt01
+# 3L8wDQYJKoZIhvcNAQEBBQAEggEAL3VlMglXsNvdC+/bSdxLdY/P6H9zwtppheBk
+# gh5/jmJlPSPZZ1mS3ZN25vCHGrYV1vr5wo307ineKwf8M2WKgASwwwV+padyHpn0
+# Q02lCJ3HJjkoLE8VJjBSWkua2bED0frxjsSnAYdv2kiSQ9XwMjJCUy+h6okn2FIy
+# iqp0yMaAyCidx5qMD7HRcPyqWnTKSmWOvDGGfFg5Zt2gPWagArNQftGXvwK4k7Sz
+# TmLkTfXHAnMGM6k7ReBiqJu7hDzcvhM5PpyiTU053/z5Ws3u96PsM1DMFG8bWfvE
+# PBBpIRKfaDa9dPnn/i1k/25MDF/g72T2a56TDp78KACNOjkjsw==
+# SIG # End signature block
