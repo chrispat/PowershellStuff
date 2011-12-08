@@ -1,0 +1,17 @@
+<Types>
+     <Type>
+        <Name>System.IO.FileInfo</Name>
+        <Members>
+           <ScriptProperty>
+                <Name>DatePhotoTaken</Name>
+                <GetScriptBlock>
+                if ($this.Extension -match "jpg|raw|nef")
+                 {
+                  $photo = new-object PhotoLibrary.Photo $this.FullName
+                  $photo.DateTimeOriginal
+                }
+                </GetScriptBlock>
+            </ScriptProperty>
+          </Members>
+     </Type>
+</Types>
