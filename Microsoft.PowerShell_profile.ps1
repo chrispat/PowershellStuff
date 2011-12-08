@@ -1,5 +1,5 @@
 ########################################################
-#
+# Chris Pattersons Powershell Profile
 ########################################################
 # Load any custom Powershell Snapins that we want
 function LoadSnapin($name)
@@ -10,24 +10,18 @@ function LoadSnapin($name)
 		Add-PSSnapin $name
 	}
 }
+   
 
 #####################################################
 # Various helper globals
 if (-not $global:home) { $global:home = (resolve-path ~) }
 
 $dl = "~\Downloads";
-$dev = "C:\Development";
 $programs = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]"ProgramFiles");
 $scripts = (split-path $profile); # I keep my personal .PS1 files in the same folder as my $profile
 $documents = [System.Environment]::GetFolderPath("Personal")
 $framework = Join-Path $Env:windir "Microsoft.NET\Framework"
 $framework = Join-Path $framework ([Reflection.Assembly]::GetExecutingAssembly().ImageRuntimeVersion)
-
-#####################################################
-# Helper scripts we will want
-. (resolve-path $scripts\gitutils.ps1)
-. (resolve-path $scripts\svnutils.ps1)
-. (resolve-path $scripts\hgutils.ps1)
 
 ########################################################
 # Helper Functions
@@ -42,23 +36,29 @@ function strip-extension ([string] $filename) { [system.io.path]::getfilenamewit
 function cd.. { cd ..  }
 function lsf { get-childitem | ? { $_.PSIsContainer -eq $false } }
 function lsd { get-childitem | ? { $_.PSIsContainer -eq $true } }
-function ie { & 'C:\program files\Internet Explorer\iexplore.exe' $args }
-function firefox { & "C:\Program Files\Mozilla Firefox\firefox.exe" $args }
-function google { ie "http://www.google.com/search?q=$args" }
-function gitbash { & cmd.exe /c $env:userprofile + "\utils\git\bin\sh.exe" -login -i }
+function ie { & 'C:\Program Files (x86)\Internet Explorer\iexplore.exe' $args }
+function firefox { & "C:\Program Files (x86)\Mozilla Firefox\firefox.exe" $args }
+function bing { ie "http://www.bing.com/search?q=$args" }
 function prepend-path { $oldPath = get-content Env:\Path; $newPath = $args + ";" + $oldPath; set-content Env:\Path $newPath; }
 function append-path { $oldPath = get-content Env:\Path; $newPath = $oldPath + ";" + $args; set-content Env:\Path $newPath; }
 
 ########################################################
 # Environmental stuff I like...
+#####################################################
+# Helper scripts we will want
+
+New-PSDrive -Name Scripts -PSProvider FileSystem -Root $scripts
+Get-ChildItem scripts:\Lib*.ps1 | % { 
+    . $_
+    write-host "Loading library file:`t$($_.name)"
+}
 
 # Customize the path for PS shells
 append-path (split-path $profile)    # I put my scripts in the same dir as my profile script
 append-path ($env:userprofile + "\utils\bin")
 append-path ($env:userprofile + "\utils\sysinternals")
-append-path 'C:\Program Files (x86)\GnuWin32\bin'
 
-# Tell UNIX utilities (particulary svn.exe) to use VIM for its editor 
+# Tell UNIX utilities (particulary svn.exe) to use Notepad2 for its editor 
 set-content Env:\VISUAL 'notepad2.exe';
 
 # Aliases
@@ -121,13 +121,6 @@ function elevate-process
 	[System.Diagnostics.Process]::Start($psi);
 }
 
-function gvim {
-	if ($args.Count -gt 0) {
-		& gvim.exe --remote-tab-silent "${args}"
-	} else {
-		& gvim.exe
-	}
-}
 
 filter Format-Bytes {
 	$units = 'B  ', 'KiB', 'MiB', 'GiB', 'TiB';
@@ -249,65 +242,10 @@ function prompt {
         Write-Host(']') -nonewline -foregroundcolor Yellow
     }    
 
-	if (Test-SvnWorkingDirectory) {
-		$info = get-SvnInfo
-		$status = get-SvnStatus
-
-		Write-Host ' svn:[' -nonewline -foregroundColor Yellow
-		Write-Host('+' + $status.added) -nonewline -foregroundcolor Yellow
-		Write-Host(' ~' + $status.modified) -nonewline -foregroundcolor Yellow
-		Write-Host(' -' + $status.deleted) -nonewline -foregroundcolor Yellow
-
-		if ($status.untracked -gt 0) {
-			Write-Host(' !') -nonewline -foregroundcolor Red
-		}
-
-		Write-Host(']') -nonewline -foregroundcolor Yellow 
-
-	}
-
 	return "> "
 }
 
-function old_prompt
-{
 
-	$nextId = (get-history -count 1).Id + 1;
-	$promptText = "[" + $nextId + "]";
-
-	$wi = [System.Security.Principal.WindowsIdentity]::GetCurrent();
-	$wp = new-object 'System.Security.Principal.WindowsPrincipal' $wi;
-
-	if ( $wp.IsInRole("Administrators") -eq 1 )
-	{
-		$color = "Red";
-		$title = "**ADMIN** - " + (get-location).Path;
-	}
-	else
-	{
-		$color = "Green";
-		$title = (get-location).Path;
-	}
-
-	if (test-path .git) {
-		$promptText = $promptText + " (git)"
-	}
-
-	if (test-path .svn) {
-		$promptText = $promptText + " (svn)"
-	}
-
-	if (test-path env:RazzleToolPath) {
-		$title = $title + "   [Branch: `$/$env:_BuildBranchPrefix$env:_BuildBranch]"
-	}
-
-	$promptText = $promptText + " »"
-
-	write-host $promptText -NoNewLine -ForegroundColor $color
-	$host.UI.RawUI.WindowTitle = $title;
-
-	return " "
-}
 
 ########################################################
 # Custom 'cd' command to maintain directory history

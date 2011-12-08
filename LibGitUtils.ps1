@@ -1,5 +1,8 @@
 # Git functions
 # Mark Embling (http://www.markembling.info/)
+
+# Add git to our path
+append-path ("C:\Program Files (x86)\Git\cmd")
  
 # Is the current directory a git repository/working copy?
 function isCurrentDirectoryGitRepository {
