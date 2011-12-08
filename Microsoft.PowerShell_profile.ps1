@@ -1,8 +1,5 @@
 ########################################################
-# Peter's PowerShell Profile (peter@provost.org)
-#  $Date: 2010-04-08 14:09:14 -0600 (Thu, 08 Apr 2010) $
-#  $Rev: 389 $
-
+#
 ########################################################
 # Load any custom Powershell Snapins that we want
 function LoadSnapin($name)
