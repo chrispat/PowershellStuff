@@ -18,7 +18,7 @@ extracting the contents. If you want to keep the file, specify the save
 directory with this parameter.
 #>
 
-param ( [string] $Extract = $(throw 'The extract directory is required' ) ,
+param ( [string] $Extract = ($env:userprofile + "\utils\sysinternals" ) ,
         [string] $Save )
 
 function CreateDirectoryIfNeeded ( [string] $directory )

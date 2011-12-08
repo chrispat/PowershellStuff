@@ -55,8 +55,10 @@ Get-ChildItem scripts:\Lib*.ps1 | % {
 
 # Customize the path for PS shells
 append-path (split-path $profile)    # I put my scripts in the same dir as my profile script
+append-path ("C:\Program Files\7-Zip\")
 append-path ($env:userprofile + "\utils\bin")
 append-path ($env:userprofile + "\utils\sysinternals")
+
 
 # Tell UNIX utilities (particulary svn.exe) to use Notepad2 for its editor 
 set-content Env:\VISUAL 'notepad2.exe';
