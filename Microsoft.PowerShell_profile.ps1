@@ -53,6 +53,9 @@ Get-ChildItem scripts:\Lib*.ps1 | % {
     write-host "Loading library file:`t$($_.name)"
 }
 
+# Import Modules
+Import-Module Pscx
+
 # Customize the path for PS shells
 append-path (split-path $profile)    # I put my scripts in the same dir as my profile script
 append-path ("C:\Program Files\7-Zip\")
