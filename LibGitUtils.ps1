@@ -5,7 +5,7 @@
 append-path ("C:\Program Files (x86)\Git\cmd")
  
 # Is the current directory a git repository/working copy?
-function isCurrentDirectoryGitRepository {
+function Test-GitRepository {
     if ((Test-Path ".git") -eq $TRUE) {
         return $TRUE
     }
