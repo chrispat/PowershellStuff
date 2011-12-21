@@ -2,6 +2,9 @@
 # Peter Provost (http://www.peterprovost.org/)
 # Credits: gitutils by Mark Embling (http://www.markembling.info/)
  
+# add SVN to our path
+append-path("C:\Program Files\CollabNet\Subversion Client\")
+ 
 # Is the current directory a svn repository/working copy?
 function Test-SvnWorkingDirectory {
     if ((Test-Path ".svn") -eq $TRUE) {

@@ -50,11 +50,12 @@ function append-path { $oldPath = get-content Env:\Path; $newPath = $oldPath + "
 New-PSDrive -Name Scripts -PSProvider FileSystem -Root $scripts
 Get-ChildItem scripts:\Lib*.ps1 | % { 
     . $_
-    write-host "Loading library file:`t$($_.name)"
 }
 
 # Import Modules
 Import-Module PowerTab
+Import-Module Pscx
+
 
 # Customize the path for PS shells
 append-path (split-path $profile)    # I put my scripts in the same dir as my profile script
@@ -202,31 +203,30 @@ function prompt {
 
 	# Window title and main prompt text
 	$host.UI.RawUi.WindowTitle = $global:WindowTitlePrefix + $title
-    Write-Host $userLocation -nonewline -foregroundcolor $color 
-	Write-Host (" " + $currentDirectoryName) -nonewline
-	
-	if (isCurrentDirectoryGitRepository) {
-			$status = gitStatus
-			$currentBranch = $status["branch"]
+  Write-Host $userLocation -nonewline -foregroundcolor $color 
+  Write-Host (" " + $currentDirectoryName) -nonewline
+
+    if (Test-GitRepository) {
+      $status = gitStatus
+      $currentBranch = $status["branch"]
 			
-			Write-Host(' git:[') -nonewline -foregroundcolor Yellow
-			if ($status["ahead"] -eq $FALSE) { # We are not ahead of origin
-					Write-Host($currentBranch) -nonewline -foregroundcolor Cyan
+      Write-Host(' git:[') -nonewline -foregroundcolor Yellow
+      if ($status["ahead"] -eq $FALSE) { # We are not ahead of origin
+        Write-Host($currentBranch) -nonewline -foregroundcolor Cyan
 			} else { # We are ahead of origin
-					Write-Host($currentBranch) -nonewline -foregroundcolor Red
+        Write-Host($currentBranch) -nonewline -foregroundcolor Red
 			}
-			Write-Host(' +' + $status["added"]) -nonewline -foregroundcolor Yellow
-			Write-Host(' ~' + $status["modified"]) -nonewline -foregroundcolor Yellow
-			Write-Host(' -' + $status["deleted"]) -nonewline -foregroundcolor Yellow
-			
-			if ($status["untracked"] -ne $FALSE) {
-					Write-Host(' !') -nonewline -foregroundcolor Red
-			}
-			
-			Write-Host(']') -nonewline -foregroundcolor Yellow 
-	}
+      Write-Host(' +' + $status["added"]) -nonewline -foregroundcolor Yellow
+      Write-Host(' ~' + $status["modified"]) -nonewline -foregroundcolor Yellow
+      Write-Host(' -' + $status["deleted"]) -nonewline -foregroundcolor Yellow
+
+      if ($status["untracked"] -ne $FALSE) {
+        Write-Host(' !') -nonewline -foregroundcolor Red
+      }
+      Write-Host(']') -nonewline -foregroundcolor Yellow 
+    }
     
-    if (isCurrentDirectoryMercurialRepository) {
+    if (Test-MercurialRepository) {
         $status = mercurialStatus
         $currentBranch = $status["branch"]
  
@@ -245,7 +245,23 @@ function prompt {
         }   
  
         Write-Host(']') -nonewline -foregroundcolor Yellow
-    }    
+    }
+    if (Test-SvnWorkingDirectory) {
+      $info = get-SvnInfo
+      $status = get-SvnStatus
+
+      Write-Host ' svn:[' -nonewline -foregroundColor Yellow
+      Write-Host('+' + $status.added) -nonewline -foregroundcolor Yellow
+      Write-Host(' ~' + $status.modified) -nonewline -foregroundcolor Yellow
+      Write-Host(' -' + $status.deleted) -nonewline -foregroundcolor Yellow
+
+      if ($status.untracked -gt 0) {
+        Write-Host(' !') -nonewline -foregroundcolor Red
+      }
+
+      Write-Host(']') -nonewline -foregroundcolor Yellow 
+    }
+
 
 	return "> "
 }
