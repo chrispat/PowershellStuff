@@ -117,13 +117,13 @@
   <Config>
     <Category>Setup</Category>
     <Name>ConfigurationPath</Name>
-    <Value>E:\Documents\WindowsPowerShell\PowerTabConfig.xml</Value>
+    <Value>..\..\PowerTabConfig.xml</Value>
     <Type>String</Type>
   </Config>
   <Config>
     <Category>Setup</Category>
     <Name>DatabasePath</Name>
-    <Value>E:\Documents\WindowsPowerShell\TabExpansion.xml</Value>
+    <Value>..\..\TabExpansion.xml</Value>
     <Type>String</Type>
   </Config>
   <Config>
