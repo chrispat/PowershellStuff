@@ -43,10 +43,11 @@ append-path ($env:userprofile + "\utils\bin")
 append-path ($env:userprofile + "\utils\sysinternals")
 
 # Import Modules
-Import-Module PowerTab
-Import-Module Pscx
+# Import-Module Pscx
 Import-Module posh-git
 Import-Module posh-hg
+Import-Module PowerTab
+
 
 # Tell UNIX utilities (particulary svn.exe) to use Notepad2 for its editor 
 set-content Env:\VISUAL 'notepad2.exe';
@@ -131,6 +132,6 @@ function prompt {
 
 Enable-GitColors
 
-Start-SshAgent -Quiet
+
 
 
